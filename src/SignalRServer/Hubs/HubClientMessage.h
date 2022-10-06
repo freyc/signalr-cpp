@@ -39,11 +39,11 @@ namespace P3 { namespace SignalR { namespace Server {
 class HubClientMessage : public ClientMessage
 {
 public:
-    HubClientMessage(const char* hub, const char* func, VariantList& args);
+    HubClientMessage(const char* hub, const char* func, Json::Value& args);
 
     string hubName() const;
 
-    VariantMap toMap() const override;
+    Json::Value toMap() const override;
 
 private:
     string _hubName;

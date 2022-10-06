@@ -26,7 +26,7 @@ HubSubscriberList HubSubscriberList::byHub(const char *hubName)
     return ret;
 }
 
-void HubSubscriberList::send(const char *hub, const char *func, VariantList &args)
+void HubSubscriberList::send(const char *hub, const char *func, Json::Value &args)
 {
     lock();
     for (Subscriber* sub : *this)
@@ -39,7 +39,7 @@ void HubSubscriberList::send(const char *hub, const char *func, VariantList &arg
     unlock();
 }
 
-void HubSubscriberList::send(Hub *h, const char *func, VariantList &args)
+void HubSubscriberList::send(Hub *h, const char *func, Json::Value &args)
 {
     lock();
     for (Subscriber* sub : *this)

@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include <json/reader.h>
 namespace P3 { namespace SignalR { namespace Server {
 
 LongPollingTransport::LongPollingTransport()
@@ -51,12 +52,20 @@ void LongPollingTransport::processAbortRequest(PersistentConnection* conn, Reque
 
 string LongPollingTransport::stripHubName(string& json)
 {
+#if 1
+    Json::Reader reader;
+    Json::Value root;
+
+    reader.parse(json, root);
+    return root[0]["Name"].as<std::string>();
+#else
     Variant v = Json::parse(json);
     vector<Variant> msg = v.toList();
 
     // [{"Name":"Chat"}]
     string hubName = msg.at(0).toVariantMap()["Name"].toString();
     return hubName;
+#endif
 }
 
 

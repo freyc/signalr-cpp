@@ -33,10 +33,10 @@ void Hub::onDisconnected()
 
 }
 
-Variant Hub::onMessage(const char* , vector<Variant>& )
+Json::Value Hub::onMessage(const char* , vector<Json::Value>& )
 {
 
-    return Variant();
+    return Json::Value();
 }
 const string &Hub::hubName() const
 {
@@ -58,7 +58,7 @@ void Hub::handleDisconnected()
     onDisconnected();
 }
 
-Variant Hub::handleMessage(const char *functionName, vector<Variant>& params)
+Json::Value Hub::handleMessage(const char *functionName, vector<Json::Value>& params)
 {
    return onMessage(functionName, params);
 }

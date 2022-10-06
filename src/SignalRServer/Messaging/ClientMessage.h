@@ -31,7 +31,8 @@
 #define CLIENTMESSAGE_H
 
 #include <list>
-#include <Variant.h>
+#include <json/value.h>
+//#include <Variant.h>
 
 using namespace std;
 namespace P3 { namespace SignalR { namespace Server {
@@ -39,13 +40,13 @@ namespace P3 { namespace SignalR { namespace Server {
 class ClientMessage
 {
 public:
-    ClientMessage(const char* func, VariantList& args);
+    ClientMessage(const char* func, Json::Value& args);
     virtual ~ClientMessage();
 
     const string &clientMethod() const;
-    const VariantList &arguments() const;
+    const Json::Value &arguments() const;
 
-    virtual VariantMap toMap() const;
+    virtual Json::Value toMap() const;
 
     int messageId() { return _messageId; }
     void setMessageId(int id) { _messageId=id; }
@@ -54,7 +55,7 @@ private:
 
 protected:
     string _clientMethod;
-    VariantList _arguments;
+    Json::Value _arguments;
 };
 
 }}}

@@ -51,8 +51,8 @@ public:
     HubSubscriberList byHub(const char* hubName);
     bool contains(Subscriber *s);
     bool exists(const char* hubName, const char* connectionId);
-    void send(const char *hub, const char *func, VariantList &args);
-    void send(Hub *h, const char* func, VariantList& args);
+    void send(const char *hub, const char *func, Json::Value &args);
+    void send(Hub *h, const char* func, Json::Value& args);
     void subscribe(const char* hubName, const char* connectionId);
     void unsubscribe(const char* connectionId);
     std::string generateKey();

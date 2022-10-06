@@ -1,7 +1,7 @@
 #include "HubDispatcher.h"
 #include "../Request.h"
 #include "../SignalRServer.h"
-#include <Json.h>
+#include <json/value.h>
 #include "../Helper.h"
 #include "Hub.h"
 #include "HubManager.h"
@@ -28,11 +28,11 @@ void HubDispatcher::onConnected(Request *request, const char* connectionId)
 {
     SignalRHubServer* hubServer =  (SignalRHubServer*)_server;
     // Get the HubName from the "connectionData" in request and send OnConnected to the desired hub
-
+#if 0
     string connectionData = request->getParameter("connectionData");
-    Variant v = Json::parse(connectionData);
+    Json::Value v = Json::parse(connectionData);
 
-    VariantList hubs = v.toList();
+    Json::Value hubs = v.toList();
     for(Variant hubV : hubs) {
         string hubName = hubV.toVariantMap()["Name"].toString();
         // Find the correct hub and forward message
@@ -44,6 +44,7 @@ void HubDispatcher::onConnected(Request *request, const char* connectionId)
             hub->handleConnected();
         }        
     }
+#endif
 }
 
 void HubDispatcher::onReconnected(Request *request, const char* connectionId)
@@ -54,6 +55,7 @@ void HubDispatcher::onReconnected(Request *request, const char* connectionId)
 
     // connectionData be like "[%7B%22Name%22:%22Chat%22%7D]"
     string connectionData = request->getParameter("connectionData");
+#if 0
     Variant v = Json::parse(connectionData);
 
     VariantList hubs = v.toList();
@@ -68,13 +70,14 @@ void HubDispatcher::onReconnected(Request *request, const char* connectionId)
             hub->handleReconnected();
         }
     }
+#endif
 }
 
 void HubDispatcher::onDisconnected(Request *request, const char* connectionId)
 {
     SignalRHubServer* hubServer =  (SignalRHubServer*)_server;
     // Get the HubName from the "connectionData" in request and send OnDisconnected to the desired hub
-
+#if 0
     // connectionData be like "[%7B%22Name%22:%22Chat%22%7D]"
     string connectionData = request->getParameter("connectionData");
     Variant v = Json::parse(connectionData);
@@ -90,7 +93,7 @@ void HubDispatcher::onDisconnected(Request *request, const char* connectionId)
 
         }
     }
-
+#endif
     Hub::getHubManager().getSubscribers().unsubscribe(connectionId);
     Hub::getHubManager().getGroups().killAll(connectionId);
 }
@@ -102,6 +105,7 @@ string HubDispatcher::onReceived(Request *request, const char* connectionId, con
 
     SignalRHubServer* hubServer =  (SignalRHubServer*)_server;
     string body = data;
+#if 0
     Variant ret = Variant::fromValue<VariantMap>(VariantMap());
     Variant state;
     Variant result;
@@ -143,6 +147,9 @@ string HubDispatcher::onReceived(Request *request, const char* connectionId, con
     json = Json::stringify(ret);
 
     return json;
+#else
+    return "{}";
+#endif
 }
 
 }}}

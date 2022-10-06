@@ -37,7 +37,7 @@ Subscriber* SubscriberList::getFirst(const char* connectionId)
 }
 
 
-void SubscriberList::send(const char* func, VariantList& args)
+void SubscriberList::send(const char* func, Json::Value& args)
 {
     lock();
 

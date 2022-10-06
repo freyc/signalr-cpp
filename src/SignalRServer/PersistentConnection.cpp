@@ -19,6 +19,9 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 
+#include <json/writer.h>
+#include <json/reader.h>
+
 
 namespace P3 { namespace SignalR { namespace Server {
 
@@ -144,11 +147,14 @@ string PersistentConnection::assemblyVersion(int ver)
 
 void PersistentConnection::processStartRequest(Request* /* request */)
 {
+#if 0
     VariantMap start;
     start.insert(VARIANT_PAIR("Response", std::string("started")));
 
     Variant ret = Variant::fromValue(start);
     writeData(Json::stringify(ret).c_str());
+#else
+#endif
 }
 
 void PersistentConnection::processNegotiationRequest(Request* request)
@@ -173,7 +179,26 @@ void PersistentConnection::processNegotiationRequest(Request* request)
 
     Helper::replace(localPath, "/negotiate", ""); // Cut the string
 
-
+#if 1
+    Json::FastWriter writer;
+    //Json::Reader reader;
+    Json::Value negot;
+    //Json::Value transports;
+    //reader.parse("[{\"transport\": \"WebSockets\", \"transferFormats\": [\"Text\"]}]", transports);
+    negot["Url"] = std::string(localPath);
+    negot["ConnectionToken"] = std::string(connectionToken);
+    negot["ConnectionId"] = std::string(connectionId);
+    negot["KeepAliveTimeout"] = _keepAliveTimeout;
+    negot["DisconnectTimeout"] = _disconnectTimeout;
+    negot["TryWebSockets"] = _tryWebSockets;
+    negot["ProtocolVersion"] = std::string(protocolVersion);
+    negot["TransportConnectTimeout"] = _transportConnectTimeout;
+    negot["LongPollDelay"] = _longPollDelay;
+    //negot["availableTransports"] = transports;
+    
+    auto ret = writer.write(negot);
+    writeData(ret.c_str());
+#else
     VariantMap negot;
     negot.insert(VARIANT_PAIR("Url", std::string(localPath)));
     negot.insert(VARIANT_PAIR("ConnectionToken", std::string(connectionToken)));
@@ -187,15 +212,24 @@ void PersistentConnection::processNegotiationRequest(Request* request)
     Variant ret = Variant::fromValue(negot);
 
     writeData(Json::stringify(ret).c_str());
+#endif
 }
 
 void PersistentConnection::processPingRequest(Request* )
 {
+#if 1
+    Json::Value ping;
+    ping["Response"] = std::string("pong");
+    Json::FastWriter writer;
+    auto ret = writer.write(ping);
+    writeData(ret.c_str());
+#else
     VariantMap ping;
     ping.insert(VARIANT_PAIR("Response", std::string("pong")));
 
     Variant ret = Variant::fromValue(ping);
     writeData(Json::stringify(ret).c_str());
+#endif
 }
 
 bool PersistentConnection::writeData(const char* buffer, int retcode)
@@ -224,6 +258,7 @@ bool PersistentConnection::writeData(const char* buffer, int retcode)
     strcat(header,"\r\n");
     if (buflen>0)
     {
+        strcat(header,"Content-Type: application/json\r\n");
         strcat(header,"Content-Length: ");
         sprintf(val,"%d", buflen);
         strcat(header,val);
@@ -387,6 +422,17 @@ std::list<string> PersistentConnection::splitGroupsToken(const char* token)
     std::list<string> result;
     if (strlen(token)>0)
     {
+#if 1
+        std::string json = Helper::getRightOfSeparator(token,":");
+        Json::Reader reader;
+        Json::Value v;
+        reader.parse(json, v);
+        if(v.isArray()) {
+            for(auto group: v) {
+                result.push_back(group.toStyledString());
+            }
+        }
+#else
         std::string json = Helper::getRightOfSeparator(token,":");
         Variant v = Json::parse(json);
         VariantList groups = v.toList();
@@ -394,6 +440,7 @@ std::list<string> PersistentConnection::splitGroupsToken(const char* token)
         {
             result.push_back(group.toString());
         }
+#endif
     }
     return result;
 }
@@ -464,6 +511,9 @@ std::string PersistentConnection::encodeGroupsToken(std::list<std::string>* grou
 
 std::string PersistentConnection::createResponse(Request* , bool bInitializing, bool bReconnect, std::list<std::string> *groups, int longPollDelay, list<ClientMessage*>* messages, const char* messageIds)
 {
+#if 1
+    return "";
+#else
     VariantMap resp;
     std::string mid = Helper::NullToEmpty(messageIds);
 
@@ -515,6 +565,7 @@ std::string PersistentConnection::createResponse(Request* , bool bInitializing, 
     Variant ret = Variant::fromValue(resp);
     std::string json = Json::stringify(ret);
     return json;
+#endif
 }
 
 void PersistentConnection::handleConnected(Request* request, const char* connectionId)

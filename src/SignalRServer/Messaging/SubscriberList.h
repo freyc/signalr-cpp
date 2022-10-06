@@ -32,7 +32,8 @@
 
 #include <list>
 #include "Subscriber.h"
-#include <Variant.h>
+#include <json/value.h>
+//#include <Variant.h>
 
 using namespace std;
 namespace P3 { namespace SignalR { namespace Server {
@@ -51,7 +52,7 @@ private:
 
 public:
     Subscriber* getFirst(const char* connectionId);
-    virtual void send(const char* func, VariantList& args);
+    virtual void send(const char* func, Json::Value& args);
     bool hasMessages(const char* connectionId);
     list<ClientMessage *> getMessages(const char* connectionId);
     void removeAllMessages(const char* connectionId);

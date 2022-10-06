@@ -32,7 +32,7 @@
 
 #include <strings.h>
 #include <vector>
-#include <Json.h>
+#include <json/value.h>
 #include "HubSubscriberList.h"
 #include "HubGroupList.h"
 #include "PersistentConnection.h"
@@ -55,7 +55,7 @@ protected:
     virtual void onConnected();
     virtual void onReconnected();
     virtual void onDisconnected();
-    virtual Variant onMessage(const char* functionName, vector<Variant>& params);
+    virtual Json::Value onMessage(const char* functionName, vector<Json::Value>& params);
 
     static HubManager _hubManager;
 
@@ -68,7 +68,7 @@ public:
     void handleConnected();
     void handleReconnected();
     void handleDisconnected();
-    Variant handleMessage(const char* functionName, vector<Variant>& params);
+    Json::Value handleMessage(const char* functionName, vector<Json::Value>& params);
 
 public:
     static HubManager& getHubManager() { return _hubManager; }
